@@ -6,6 +6,6 @@ class HelloControllerTest {
 
     @Test
     void testHello() {
-//        throw new IllegalStateException();
+        throw new IllegalStateException();
     }
 }
