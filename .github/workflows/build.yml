@@ -10,10 +10,6 @@ name: Java CI with Gradle
 on:
   pull_request:
     branches: [ "main" ]
-    paths:
-      - '**/src/**'
-      - '**/Dockerfile*'
-      - '**.gradle*'
 
 jobs:
   build:
