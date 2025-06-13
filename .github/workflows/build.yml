@@ -54,26 +54,3 @@ jobs:
         if: always()
         with:
           files: ${{ github.workspace }}/cicd-api/build/test-results/**/*.xml
-
-      # SonarCloud 분석 단계 추가
-      - name: Cache SonarCloud scanner
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Run SonarCloud analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # PR 분석 및 PR Decoration에 필요
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # SonarCloud 인증 토큰
-        run: |
-          ./gradlew sonarqube \
-          -Dsonar.projectKey=ci-cd-back
-          -Dsonar.organization=gnsdp99
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-          -Dsonar.sources=cicd-api/src/main/java \
-          -Dsonar.tests=cicd-api/src/test/java \
-          -Dsonar.java.binaries=cicd-api/build/classes/java/main \
-          -Dsonar.junit.reportPaths=cicd-api/build/test-results/test
