@@ -54,3 +54,27 @@ jobs:
         if: always()
         with:
           files: ${{ github.workspace }}/cicd-api/build/test-results/**/*.xml
+
+      # SonarCloud 분석 단계 추가
+      - name: Cache SonarCloud scanner
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run SonarCloud analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # PR 분석 및 PR Decoration에 필요
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # SonarCloud 인증 토큰
+        run:
+          ./gradlew sonarqube \
+            -Dsonar.projectKey=ci-cd-back \ # SonarCloud 프로젝트 키로 변경
+            -Dsonar.organization=gnsdp99 \ # SonarCloud Organization 키로 변경
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=cicd-api/src/main/java \ # 분석할 소스 코드 경로 (프로젝트 구조에 맞게 변경)
+            -Dsonar.tests=cicd-api/src/test/java \ # 테스트 코드 경로 (선택 사항, 필요시 추가)
+            -Dsonar.java.binaries=cicd-api/build/classes/java/main \ # 컴파일된 바이트코드 경로 (Java 프로젝트 필수)
+            -Dsonar.junit.reportPaths=cicd-api/build/test-results/test \ # JUnit 테스트 결과 경로 (선택 사항)
+#            -Dsonar.coverage.jacoco.xmlReportPaths=cicd-api/build/reports/jacoco/test/jacocoTestReport.xml # JaCoCo 커버리지 리포트 경로 (Jacoco 연동 시)
